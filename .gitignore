@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Session notes
+2026-*.md
+
+# State files
+state/
+
+# Notebooks
+*.ipynb

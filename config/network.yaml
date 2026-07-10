@@ -1,0 +1,40 @@
+#======================================================
+#network.yaml -  Desired State for the Network Layer
+## This files defines WHAT we wwnt to exsits in AWS.
+#Python code will be reading this
+#Change the values here safe for the project
+#========================================================
+
+vpc:
+   name: "dev-vpc"
+   cidr: "10.0.0.0/16"
+   region: "ap-south-1"
+
+subnets:
+  public:
+    - name: "public-subnet-az1"
+      cidr: "10.0.1.0/24"
+      az: "ap-south-1a"
+    - name: "public-subnet-az2"
+      cidr: "10.0.2.0/24"
+      az: "ap-south-1b"
+  private:
+    - name: "private-subnet-az1"
+      cidr: "10.0.3.0/24"
+      az: "ap-south-1a"
+    - name: "private-subnet-az2"
+      cidr: "10.0.4.0/24"
+      az: "ap-south-1b"
+
+internet_gateway:
+     name: "dev-igw"
+
+nat_gateway:
+     name: "dev-nat"
+     subnet: "public-subnet-az1"
+     strategy: "single"
+
+tags:
+   ManagedBy: "PythonIAC"
+   Layer: "Networking"
+   Environment: "Dev"
