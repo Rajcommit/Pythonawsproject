@@ -18,8 +18,17 @@ def create_vpc(config):
 
     # Already exsists / created before  -->. skip it
     if 'vpc_id' in state:
-        print(f"VPC already exsists: {state['vpc_id']}")
-        return state['vpc_id']
+       try:
+         ec2.describe_vpc(VpcIds=[state['vpc_id']])
+         print(f"Vpc already exsists (verified on AWS) : {state['vpc_id']}")
+         return state['vpc_id']
+       except ec2.exceptions.ClientError:
+         print(f"VPC was deleted from AWS! Recreating...")
+         del state['vp_id']
+         del state['vpc_name']
+         return state['vpc_id']
+         save_state(state)
+
 
     else:
         ### Create a VPC
