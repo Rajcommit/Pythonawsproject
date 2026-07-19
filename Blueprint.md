@@ -35,6 +35,42 @@ pythonawsproject/
 ├── state/
 │   └── state.json            # generated — logical-name-to-AWS-id map, gitignored
 └── main.py                    # CLI entrypoint: plan / apply / destroy
+
+
+The Architecture — How It All Connects
+
+                          INTERNET
+                             │
+                             ▼
+                     ┌───────────────┐
+                     │ Internet GW   │
+                     │ (igw-08d...)  │
+                     └───────┬───────┘
+                             │
+                ┌────────────┴────────────┐
+                ▼                         ▼
+     ┌─────────────────┐      ┌─────────────────┐
+     │ PUBLIC Route     │      │                 │
+     │ Table            │      │                 │
+     │                  │      │                 │
+     │ 10.0.0.0/16→local│      │                 │
+     │ 0.0.0.0/0 →IGW  │      │                 │
+     └────────┬─────────┘      │                 │
+              │                 │                 │
+     ┌────────┴────────┐       │                 │
+     │  Public Subnets │       │ PRIVATE Route   │
+     │  - az1 (10.0.1) │       │ Table           │
+     │  - az2 (10.0.2) │       │                 │
+     └─────────────────┘       │ 10.0.0.0/16→local│
+                                │ 0.0.0.0/0 →NAT  │  ← (NAT comes later)
+                                └────────┬────────┘
+                                         │
+                                ┌────────┴────────┐
+                                │ Private Subnets  │
+                                │  - az1 (10.0.3)  │
+                                │  - az2 (10.0.4)  │
+                                └──────────────────┘
+
 ```
 
 ## 4. Design Decisions & Why
