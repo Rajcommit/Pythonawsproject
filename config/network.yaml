@@ -34,6 +34,29 @@ nat_gateway:
      subnet: "public-subnet-az1"
      strategy: "single"
 
+security_groups:
+   - name: "dev-web-sg"
+     description: "Allow SSH, HTTP, HTTPS inbound"
+     ingress:
+      - protocol: "tcp"
+        port: 22
+        cidr: "0.0.0.0/0"
+        description: "SSH access"
+      - protocol: "tcp"
+        port: 80
+        cidr: "0.0.0.0/0"
+        description: "HTTP"
+      - protocol: "tcp"
+        port: 443
+        cidr: "0.0.0.0/0"
+        description: "HTTPs"
+     egress:
+      - protocol: "tcp"
+        port: 80
+        cidr: "0.0.0.0/0"
+        description: "HTTP"
+
+
 tags:
    ManagedBy: "PythonIAC"
    Layer: "Networking"

@@ -45,7 +45,7 @@ def verify_igw_exists(ec2, igw_id):
 
 
 def verify_nat_exists(ec2, nat_id):
-    """Ask AWS: does this NAT Gateway still exist and is it active?"""
+    """Ask AWS: does this Security Group still exist and is it active?"""
     try:
         response = ec2.describe_nat_gateways(NatGatewayIds=[nat_id])
         if len(response['NatGateways']) > 0:
@@ -64,6 +64,13 @@ def verify_route_table_exists(ec2, rt_id):
     except:
         return False
 
+def verify_sg_exists(ec2, sg_id):
+    """Ask AWS: does this Security Group still exist?"""
+    try:
+        response = ec2.describe_security_groups(GroupIds=[sg_id])
+        return len(response['SecurityGroups']) > 0
+    except:
+        return False
 
 # ==================== THE SYNC ENGINE ====================
 # Walks through state.json and verifies each resource against AWS
@@ -129,6 +136,17 @@ def sync_state_with_aws(state, ec2):
                 if key.startswith('private') and '_rt_assoc' in key:
                     del state[key]
             drifts.append('private_rt_id')
+
+
+
+    # Check Security Groups
+    for key in list(state.keys()):
+        if key.startswith('sg_'):
+           sg_id = state[key]
+           if not verify_sg_exists(ec2, sg_id):
+              print(f" Drift:Security Group {sg_id} ({key}) gone!")
+              del state[key]
+              drifts.append(key)
 
     # Save synced state
     if drifts:
@@ -258,6 +276,25 @@ def generate_plan(config):
             "id": None
         })
 
+    # ---  Security Group Check --------
+    for sg in config['security_groups']:
+        sg_name = sg['name']
+        state_key = f"sg_{sg_name}"
+        if state_key in state:
+            plan.append({
+                "type": "security_group",
+                "name": sg_name,
+                "action": "NO-OP",
+                "id": state[state_key]
+
+            })
+        else:
+            plan.append({
+               "type": "security_group",
+               "name": sg_name,
+               "action": "CREATE",
+               "id": None
+            })
     return plan
 
 
