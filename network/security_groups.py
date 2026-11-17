@@ -1,18 +1,18 @@
-  # security_groups.py - Create Security Groups + Ingress/Egress Rules
-  # A security group is a virtual firewall for your EC2 instances.
-  # Ingress = what traffic can come IN
-  # Egress = what traffic can go OUT
-  # Lives inside the VPC — requires vpc_id from state
+# security_groups.py - Create Security Groups + Ingress/Egress Rules
+# A security group is a virtual firewall for your EC2 instances.
+# Ingress = what traffic can come IN
+# Egress = what traffic can go OUT
+# Lives inside the VPC — requires vpc_id from state
 
 from network.aws_client import get_client
 from network.state import load_state, save_state
 
 
 def create_security_groups(config):
-    """Create all security groups defined in network.yaml. """
-    """Fucking prerequisits_I love it. """
+    """Create all security groups defined in network.yaml"""
+    """Prerequisits_I love it"""
     ec2 =  get_client('ec2')
-    state = load_state()
+unched    state = load_state()
     tags = config['tags']
     vpc_id = state['vpc_id']
 

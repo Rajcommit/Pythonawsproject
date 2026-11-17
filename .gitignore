@@ -3,6 +3,9 @@ __pycache__/
 *.pyo
 .env
 
+# Virtual environment
+.venv/
+
 # Session notes
 2026-*.md
 

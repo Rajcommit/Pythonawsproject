@@ -15,7 +15,9 @@ def load_config():
 
 
 # ==================== AWS VERIFICATION FUNCTIONS ====================
-# These actually ASK AWS: "Hey, does this thing still exist?"
+# These actuall
+#
+# ASK AWS: "Hey, does this thing still exist?"
 
 def verify_vpc_exists(ec2, vpc_id):
     """Ask AWS: does this VPC still exist?"""

@@ -34,7 +34,7 @@ nat_gateway:
      subnet: "public-subnet-az1"
      strategy: "single"
 
-security_groups:
+security_group:
    - name: "dev-web-sg"
      description: "Allow SSH, HTTP, HTTPS inbound"
      ingress:
@@ -56,6 +56,12 @@ security_groups:
         cidr: "0.0.0.0/0"
         description: "HTTP"
 
+ec2:
+  name: "dev-web-server"
+  ami_id: "ami-07dfe2c11d33a069a"
+  instance_type: "t2.micro"
+  subnet: "public-subnet-az1"
+  security_group: "dev-web-sg"
 
 tags:
    ManagedBy: "PythonIAC"
