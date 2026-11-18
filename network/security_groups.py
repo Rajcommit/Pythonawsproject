@@ -12,7 +12,7 @@ def create_security_groups(config):
     """Create all security groups defined in network.yaml"""
     """Prerequisits_I love it"""
     ec2 =  get_client('ec2')
-unched    state = load_state()
+    state = load_state()
     tags = config['tags']
     vpc_id = state['vpc_id']
 

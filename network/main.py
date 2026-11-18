@@ -18,6 +18,7 @@ from network.state import load_state, save_state
 from network.aws_client import get_client
 from network.internet_gateway import creating_igw
 from network.security_groups import create_security_groups
+from network.ec2_instance import create_ec2_instance
 
 def command_plan(config):
     """RECON MISSON: show that what exsists snad what is smissing"""
@@ -72,6 +73,11 @@ def command_apply(config):
     if any(p['type'] == 'security_group' and p['action'] == 'CREATE' for p in plan):
         print("━━━ Step 6: Building the firewall (Security Groups) ━━━")
         create_security_groups(config)
+
+    #Step 7: EC2 Instance
+    if any(p['type'] == 'ec2_instance' and p['action'] == 'CREATE' for p in plan):
+       print("━━━ Step 7: Launching the Server (EC2 Instance) ━━━")
+       create_ec2_instance(config)
 
     print("\n DEPLOYMENT COMPLETE. All operational")
 

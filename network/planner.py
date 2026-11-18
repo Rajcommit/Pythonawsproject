@@ -74,6 +74,17 @@ def verify_sg_exists(ec2, sg_id):
     except:
         return False
 
+def verify_ec2_exists(ec2, ec2_instance_id):
+    """Ask AWS:  does this EC2-instance still exsists and is alive?"""
+    try:
+        response = ec2.describe_instances(InstanceIds=[ec2_instance_id])
+        reservations = response['Reservations']
+        if len(reservations) > 0:
+            status = reservations[0]['Instances'][0]['State']['Name']
+            return status not in ('terminated', 'shutting-down')
+        return False
+    except:
+        return False
 # ==================== THE SYNC ENGINE ====================
 # Walks through state.json and verifies each resource against AWS
 # If something is gone → removes it from state
@@ -149,6 +160,14 @@ def sync_state_with_aws(state, ec2):
               print(f" Drift:Security Group {sg_id} ({key}) gone!")
               del state[key]
               drifts.append(key)
+
+    # Check EC2 instance
+    if 'ec2_instance_id' in state:
+        if not  verify_ec2_exists(ec2, state['ec2_instance_id']):
+            print(f" Drift: EC2 instance {state['ec2_instance_id']}gone!")
+            del state['ec2_instance_id']
+            drifts.append('ec2_instance_id')
+
 
     # Save synced state
     if drifts:
@@ -297,6 +316,17 @@ def generate_plan(config):
                "action": "CREATE",
                "id": None
             })
+
+
+    # -- EC2 Instance Check ---
+    ec2_name = config['ec2']['name']
+    if 'ec2_instance_id' in state:
+        plan.append({"type": "ec2_instance", "name": ec2_name,
+                      "action": "NO-OP", "id": state['ec2_instance_id']})
+    else:
+        plan.append({"type": "ec2_instance", "name": ec2_name,
+                      "action": "CREATE", "id": None})
+
     return plan
 
 

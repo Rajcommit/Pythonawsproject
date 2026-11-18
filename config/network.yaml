@@ -34,7 +34,7 @@ nat_gateway:
      subnet: "public-subnet-az1"
      strategy: "single"
 
-security_group:
+security_groups:
    - name: "dev-web-sg"
      description: "Allow SSH, HTTP, HTTPS inbound"
      ingress:
