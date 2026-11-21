@@ -92,6 +92,22 @@ def command_destroy(config):
         print("Nothing to destroy. Base is already empty.")
         return
 
+
+    #=======Step 0: "Terminate EC2 Instance (must  go before SG/subnet/VPC) ====="
+    if 'ec2_instance_id' in state:
+        print("====== Terminate EC2 Instance ======")
+        instance_id = state['ec2_instance_id']
+        try:
+            ec2.terminate_instances(InstanceIds=[instance_id])
+            print(f". Waiting for {instance_id} to terminate...")
+            ec2.get_waiter('instance_terminated').wait(InstanceIds=[instance_id])
+            del state['ec2_instance_id']
+            save_state(state)
+        except Exception as e:
+            print (f" EX2 already gone or coudn't terminate: {e}")
+
+
+
     # ===== Step 1: Delete NAT Gateway =====
     if 'nat_id' in state:
         print("===== Destroying NAT Gateway =====")
